@@ -1,5 +1,6 @@
 const express = require('express');
 const { MongoClient } = require("mongodb");
+const ObjectId = require('mongodb').ObjectId;
 const app = express();
 const cors = require('cors');
 require('dotenv').config();
@@ -21,6 +22,7 @@ async function run(){
         const database = await client.db('Saimon_Hotel_User');
         const facilitiesCollection = await database.collection('Facilities');
         const OurRoomCollection = await database.collection('HotelRoom')
+        const AddUserRoomCollection = await database.collection('Add_User_Room');
         
         //Facilities Data Add
         app.post('/facilities',async (req, res) => {
@@ -50,6 +52,41 @@ async function run(){
 
             res.send(result)
         })
+
+        //Room details
+        app.get("/singleRoom/:id", (req, res) => {
+
+            const roomId = req.params.id
+            
+            OurRoomCollection.findOne({ _id: ObjectId(roomId) })
+            
+            .then(result => {
+                
+                res.send(result)
+            });
+        });
+
+        //ADD Room
+        app.post('/addRoom', (req, res) => {
+            const roomItem = req.body;
+            
+            AddUserRoomCollection.insertOne(roomItem).then(result => {
+
+                res.send(result.insertedId)
+            })
+        })
+
+        //my order room
+        app.get("/myOrderRoom/:email", async (req, res) => {
+           
+            const orderMatch = req.params.email;
+
+        const result = await AddUserRoomCollection.find({
+          email: orderMatch,
+        }).toArray();
+        res.send(result);
+        })
+       
     } finally {
         // await client.close();
     }
