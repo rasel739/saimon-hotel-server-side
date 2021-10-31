@@ -23,6 +23,7 @@ async function run(){
         const facilitiesCollection = await database.collection('Facilities');
         const OurRoomCollection = await database.collection('HotelRoom')
         const AddUserRoomCollection = await database.collection('Add_User_Room');
+        const gallaryImgCollection = await database.collection('Gallery_img');
         
         //Facilities Data Add
         app.post('/facilities',async (req, res) => {
@@ -115,6 +116,27 @@ async function run(){
             })
                 res.send(result.acknowledged);
         });
+
+        //delete my order
+
+        app.delete('/deleteMyOrder/:id', async (req, res) => {
+            
+            const deleteId = req.params.id;
+
+            const result = await AddUserRoomCollection.deleteOne({ _id: deleteId })
+            
+            res.send(result)
+        })
+
+        //gallery img
+
+        app.get('/gallery', async (req, res) => {
+
+            const result = await gallaryImgCollection.find({}).toArray();
+
+            res.send(result)
+
+        })
        
     } finally {
         // await client.close();
