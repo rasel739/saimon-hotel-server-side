@@ -85,7 +85,36 @@ async function run(){
           email: orderMatch,
         }).toArray();
         res.send(result);
+        });
+
+        //all order
+        app.get('/allOrder', async (req, res) => {
+
+            const result = await AddUserRoomCollection.find({}).toArray();
+
+            res.send(result);
         })
+
+        //Update User Status Text
+        app.get("/updateStatusText/:id", async(req, res) => {
+            const userId = req.params.id
+           const result = await  AddUserRoomCollection.findOne({_id: userId})
+               res.send(result)
+    
+        });
+
+        //Update User
+        app.put("/updateStatus/:id", async (req, res) => {
+            const statusId = req.params.id;
+            const statusUpdate = req.body;
+            const result = await AddUserRoomCollection.updateOne({ _id: statusId }, {
+                
+                $set: {
+                   status:statusUpdate.status
+                }
+            })
+                res.send(result.acknowledged);
+        });
        
     } finally {
         // await client.close();
